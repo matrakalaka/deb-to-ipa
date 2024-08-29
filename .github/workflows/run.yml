@@ -27,12 +27,12 @@ jobs:
           # Create the IPA Payload directory
           mkdir -p ${{ github.workspace }}/ipa/Payload
 
-          # Copy extracted files to Payload
-          if [ -d "${{ github.workspace }}/app/Applications" ]; then
-            cp -R ${{ github.workspace }}/app/Applications/* ${{ github.workspace }}/ipa/Payload
-          elif [ -d "${{ github.workspace }}/app/Library/MobileSubstrate/DynamicLibraries" ]; then
+          # Check if the extracted files are in var/jb/Applications or Library
+          if [ -d "${{ github.workspace }}/app/var/jb/Applications" ]; then
+            cp -R ${{ github.workspace }}/app/var/jb/Applications/* ${{ github.workspace }}/ipa/Payload
+          elif [ -d "${{ github.workspace }}/app/var/jb/Library/MobileSubstrate/DynamicLibraries" ]; then
             mkdir -p ${{ github.workspace }}/ipa/Payload/Library/MobileSubstrate/DynamicLibraries
-            cp -R ${{ github.workspace }}/app/Library/MobileSubstrate/DynamicLibraries/* ${{ github.workspace }}/ipa/Payload/Library/MobileSubstrate/DynamicLibraries
+            cp -R ${{ github.workspace }}/app/var/jb/Library/MobileSubstrate/DynamicLibraries/* ${{ github.workspace }}/ipa/Payload/Library/MobileSubstrate/DynamicLibraries
           else
             echo "No valid application files found in expected directories."
             exit 1
