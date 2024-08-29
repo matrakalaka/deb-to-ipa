@@ -14,8 +14,12 @@ jobs:
     steps:
       - name: Convert deb to IPA
         run: |
+          # Extract the filename from the deb URL
+          deb_url="${{ github.event.inputs.deb }}"
+          deb_filename=$(basename "$deb_url" .deb)
+
           # Download the .deb file
-          curl -L -o ${{ github.workspace }}/app.deb "${{ github.event.inputs.deb }}"
+          curl -L -o ${{ github.workspace }}/app.deb "$deb_url"
           
           # Extract the contents of the .deb file
           dpkg-deb -X ${{ github.workspace }}/app.deb ${{ github.workspace }}/app
@@ -34,13 +38,13 @@ jobs:
             exit 1
           fi
           
-          # Create the IPA file
+          # Create the IPA file using the .deb filename
           cd ${{ github.workspace }}/ipa
-          zip -r App.ipa Payload
+          zip -r "${deb_filename}.ipa" Payload
 
           # Ensure the IPA file exists
-          if [ -f "App.ipa" ]; then
-            echo "IPA created successfully!"
+          if [ -f "${deb_filename}.ipa" ]; then
+            echo "IPA created successfully as ${deb_filename}.ipa!"
           else
             echo "IPA creation failed."
             exit 1
@@ -50,4 +54,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: App
-          path: ${{ github.workspace }}/ipa/App.ipa
+          path: ${{ github.workspace }}/ipa/*.ipa
